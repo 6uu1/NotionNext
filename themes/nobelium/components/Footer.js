@@ -1,5 +1,5 @@
 import DarkModeButton from '@/components/DarkModeButton'
-import Vercel from '@/components/Vercel'
+// import Vercel from '@/components/Vercel'
 import { siteConfig } from '@/lib/config'
 
 export const Footer = (props) => {
@@ -22,7 +22,7 @@ export const Footer = (props) => {
          <p>
            © {siteConfig('AUTHOR')} {copyrightDate}
          </p>
-         <Vercel />
+         // <Vercel />
        </div>
      </div>
    </footer>
