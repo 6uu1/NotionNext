@@ -1,4 +1,4 @@
-import Vercel from '@/components/Vercel'
+// import Vercel from '@/components/Vercel'
 import { siteConfig } from '@/lib/config'
 
 export const Footer = (props) => {
@@ -13,7 +13,7 @@ export const Footer = (props) => {
        <div className="flex align-baseline justify-start flex-wrap space-x-6">
          <div> © {siteConfig('AUTHOR')} {copyrightDate}  </div>
          <div>Powered By <a href="https://github.com/tangly1024/NotionNext" className='underline'>NotionNext {siteConfig('VERSION')}</a></div>
-         <Vercel />
+         // <Vercel />
        </div>
      </div>
    </footer>
