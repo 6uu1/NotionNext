@@ -1,6 +1,6 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
-import { getGlobalData, getPostBlocks } from '@/lib/db/getSiteData'
+import { fetchGlobalAllData, getPostBlocks } from '@/lib/db/SiteDataApi'
 import { DynamicLayout } from '@/themes/theme'
 import CONFIG_NEXT from '@/themes/next/config'
 import { sortPostsByTopTag } from '@/lib/utils/post'
@@ -17,7 +17,7 @@ const Page = props => {
 
 export async function getStaticPaths({ locale }) {
   const from = 'page-paths'
-  const { postCount, NOTION_CONFIG } = await getGlobalData({ from, locale })
+  const { postCount, NOTION_CONFIG } = await fetchGlobalAllData({ from, locale })
   const totalPages = Math.ceil(
     postCount / siteConfig('POSTS_PER_PAGE', null, NOTION_CONFIG)
   )
@@ -32,7 +32,7 @@ export async function getStaticPaths({ locale }) {
 
 export async function getStaticProps({ params: { page }, locale }) {
   const from = `page-${page}`
-  const props = await getGlobalData({ from, locale })
+  const props = await fetchGlobalAllData({ from, locale })
   const { allPages } = props
   const POST_PREVIEW_LINES = siteConfig(
     'POST_PREVIEW_LINES',

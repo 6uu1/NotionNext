@@ -1,6 +1,6 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
-import { getGlobalData } from '@/lib/db/getSiteData'
+import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
 import { DynamicLayout } from '@/themes/theme'
 import CONFIG_NEXT from '@/themes/next/config'
 import { sortPostsByTopTag } from '@/lib/utils/post'
@@ -18,7 +18,7 @@ export default function Category(props) {
 
 export async function getStaticProps({ params: { category, page } }) {
   const from = 'category-page-props'
-  let props = await getGlobalData({ from })
+  let props = await fetchGlobalAllData({ from })
 
   // 过滤状态类型
   props.posts = props.allPages
@@ -60,7 +60,7 @@ export async function getStaticProps({ params: { category, page } }) {
 
 export async function getStaticPaths() {
   const from = 'category-paths'
-  const { categoryOptions, allPages, NOTION_CONFIG } = await getGlobalData({
+  const { categoryOptions, allPages, NOTION_CONFIG } = await fetchGlobalAllData({
     from
   })
   const paths = []
