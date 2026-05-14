@@ -126,6 +126,12 @@ git merge main
 | `public/avatar.png` | 保留本地版本 | `git checkout --ours public/avatar.png` |
 | `public/favicon.*` | 保留本地版本 | `git checkout --ours public/favicon.*` |
 
+#### 文章密码兼容性维护备注
+
+合并上游或处理 GitHub Advanced Security / CodeQL 关于 `localStorage` 明文密码的建议时，不要直接套用“把输入密码 hash 后存储”的自动修复。文章锁需要同时兼容新版 `sha256(password)` 和旧版 `md5(slug + password)`；如果只存 `sha256(password)`，旧版 md5 文章的自动解锁会失效。
+
+当前策略是：`localStorage` 只写入已经通过文章密码校验的凭据摘要（例如 `sha256:<digest>` 或 `legacy-md5:<digest>`），不写入明文；读取时仍兼容历史明文缓存，并在用户成功解锁后迁移为摘要凭据。后续合并 `lib/utils/password.js`、`pages/[prefix]/index.js` 时必须保留这一兼容逻辑。
+
 处理完成后：
 
 ```bash
