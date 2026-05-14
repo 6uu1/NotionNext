@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+import { useEffect } from 'react'
 import Prism from 'prismjs'
 // 所有语言的prismjs 使用autoloader引入
 // import 'prismjs/plugins/autoloader/prism-autoloader'

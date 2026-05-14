@@ -16,10 +16,11 @@ const FacebookPage = () => {
           href={siteConfig('FACEBOOK_PAGE')}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Facebook"
           className="p-1 pr-2 pt-0"
         >
           <span className='inline-flex w-7 h-7 rounded-full items-center justify-center bg-blue-600 text-white'>
-            <i className='fab fa-facebook-f' />
+            <i className='fab fa-facebook-f' aria-hidden='true' />
           </span>
         </a>
         <a href={siteConfig('FACEBOOK_PAGE')} rel="noopener noreferrer" target="_blank">

@@ -1,6 +1,7 @@
 import SmartLink from '@/components/SmartLink'
 import { siteConfig } from '@/lib/config'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import sanitizeHtml from 'sanitize-html'
 import CONFIG from '../config'
 
 const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
@@ -147,11 +148,19 @@ const isReadmeLikePage = page => {
 
 const sanitizeReadmeHtml = html => {
   if (!html || typeof html !== 'string') return ''
-  return html
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '')
-    .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, '')
-    .replace(/\shref\s*=\s*(['"])\s*javascript:[\s\S]*?\1/gi, ' href="#"')
+  return sanitizeHtml(html, {
+    disallowedTagsMode: 'discard',
+    allowedTags: sanitizeHtml.defaults.allowedTags.filter(
+      tag => !['script', 'iframe'].includes(tag)
+    ),
+    allowedAttributes: {
+      a: ['href', 'name', 'target', 'rel'],
+      img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+      '*': ['class', 'id', 'title', 'aria-label', 'aria-hidden', 'role']
+    },
+    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+    allowProtocolRelative: false
+  })
 }
 
 export default function ProfileHome(props) {

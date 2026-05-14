@@ -60,7 +60,6 @@ const Comment = ({ frontMatter, className }) => {
       return
     }
     const cleanPath = stripTransientQueryParamsFromAsPath(router.asPath)
-    window.history.replaceState(window.history.state, '', cleanPath)
     router
       .replace(cleanPath, undefined, { scroll: false, shallow: true })
       .catch(() => {})

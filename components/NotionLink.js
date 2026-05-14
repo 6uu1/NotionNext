@@ -1,3 +1,5 @@
+import { siteConfig } from '@/lib/config'
+
 const EXTERNAL_HTTP_LINK = /^https?:\/\//i
 
 const mergeRelValues = (...values) => {
@@ -44,8 +46,21 @@ export const shouldOpenNotionLinkInNewTab = (href, target, siteOrigin) => {
   return isExternalHttpLink(href, fallbackOrigin)
 }
 
+const getConfiguredSiteOrigin = () => {
+  try {
+    const link = siteConfig('LINK')
+    return link ? new URL(link).origin : null
+  } catch {
+    return null
+  }
+}
+
 const NotionLink = ({ href, target, rel, ...props }) => {
-  const shouldOpenInNewTab = shouldOpenNotionLinkInNewTab(href, target)
+  const shouldOpenInNewTab = shouldOpenNotionLinkInNewTab(
+    href,
+    target,
+    getConfiguredSiteOrigin()
+  )
   const normalizedTarget = shouldOpenInNewTab ? '_blank' : target
   const normalizedRel = shouldOpenInNewTab
     ? mergeRelValues(rel, 'noopener noreferrer')

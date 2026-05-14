@@ -6,13 +6,13 @@ import { resolvePostProps } from '@/lib/db/SiteDataApi'
 import { useGlobal } from '@/lib/global'
 import { getPageTableOfContents } from '@/lib/db/notion/getPageTableOfContents'
 import {
+  getPasswordCredentialForPost,
   getPasswordQuery,
   getPasswordStoragePath,
-  sha256Digest
+  isPasswordCredential
 } from '@/lib/utils/password'
 import { checkSlugHasNoSlash } from '@/lib/utils/post'
 import { DynamicLayout } from '@/themes/theme'
-import md5 from 'js-md5'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
@@ -42,15 +42,16 @@ const Slug = props => {
     if (!post) {
       return false
     }
-    const legacy = md5(String(post?.slug ?? '') + passInput)
-    const nextHash = sha256Digest(passInput)
-    if (nextHash === post?.password || legacy === post?.password) {
+    const credential = getPasswordCredentialForPost(post, passInput)
+    if (credential) {
       setLock(false)
-      // 输入密码存入 localStorage；键仅含 pathname，避免 query/hash 导致读写不一致（PR #3389）
-      localStorage.setItem(
-        'password_' + getPasswordStoragePath(router.asPath),
-        passInput
-      )
+      // 仅存储已验证的密码摘要；键仅含 pathname，避免 query/hash 导致读写不一致（PR #3389）
+      if (!isPasswordCredential(passInput)) {
+        localStorage.setItem(
+          'password_' + getPasswordStoragePath(router.asPath),
+          credential
+        )
+      }
       showNotification(locale.COMMON.ARTICLE_UNLOCK_TIPS) // 设置解锁成功提示显示
       return true
     }

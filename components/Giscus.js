@@ -26,7 +26,6 @@ const GiscusComponent = () => {
       if (clean === full) {
         return
       }
-      window.history.replaceState(window.history.state, '', clean)
       Router.replace(clean, undefined, { scroll: false, shallow: true }).catch(() => {})
     }
 

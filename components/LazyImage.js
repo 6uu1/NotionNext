@@ -25,6 +25,7 @@ export default function LazyImage({
   const maxWidth = siteConfig('IMAGE_COMPRESS_WIDTH')
   const defaultPlaceholderSrc = siteConfig('IMG_LAZY_LOAD_PLACEHOLDER')
   const imageRef = useRef(null)
+  const fallbackStepRef = useRef(0)
   const [currentSrc, setCurrentSrc] = useState(
     placeholderSrc || defaultPlaceholderSrc
   )
@@ -40,14 +41,15 @@ export default function LazyImage({
 
   const handleImageError = useCallback(() => {
     if (imageRef.current) {
-      // 优先回退 fallbackSrc，再尝试 placeholderSrc，最后 defaultPlaceholderSrc
-      if (imageRef.current.src !== fallbackSrc && fallbackSrc) {
-        imageRef.current.src = fallbackSrc
-      } else if (imageRef.current.src !== placeholderSrc && placeholderSrc) {
-        imageRef.current.src = placeholderSrc
-      } else {
-        imageRef.current.src = defaultPlaceholderSrc
-      }
+      const fallbackCandidates = [
+        fallbackSrc,
+        placeholderSrc,
+        defaultPlaceholderSrc
+      ].filter(Boolean)
+      const nextSrc =
+        fallbackCandidates[fallbackStepRef.current] || defaultPlaceholderSrc
+      fallbackStepRef.current += 1
+      setCurrentSrc(nextSrc)
       imageRef.current.classList.remove('lazy-image-placeholder')
     }
   }, [defaultPlaceholderSrc, fallbackSrc, placeholderSrc])
@@ -55,6 +57,7 @@ export default function LazyImage({
   useEffect(() => {
     const adjustedImageSrc = adjustImgSize(src, maxWidth) || defaultPlaceholderSrc
     const imageElement = imageRef.current
+    fallbackStepRef.current = 0
     const handleImageLoaded = () => {
       if (typeof onLoad === 'function') {
         onLoad()

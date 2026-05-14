@@ -81,9 +81,7 @@ const SideBarDrawer = ({
           if (!backdropInteractive) return
           switchSideDrawerVisible(false)
         }}
-        className={`${isOpen ? 'block' : 'hidden'} fixed top-0 left-0 z-20 w-full h-full bg-black/70 transition-opacity duration-300 ${
-          isOpen && !backdropInteractive ? 'pointer-events-none' : ''
-        }`}
+        className={`${isOpen ? 'block' : 'hidden'} fixed top-0 left-0 z-20 w-full h-full bg-black/70 transition-opacity duration-300`}
       />
     </div>
   )

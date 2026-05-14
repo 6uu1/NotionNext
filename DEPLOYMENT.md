@@ -219,8 +219,8 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -335,10 +335,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
+        cache: 'yarn'
         
     - name: Install dependencies
-      run: npm ci
+      run: yarn install --frozen-lockfile
       
     - name: Build
       run: yarn export
