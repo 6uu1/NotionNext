@@ -3,8 +3,6 @@ import { siteConfig } from '@/lib/config'
 import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
 import { DynamicLayout } from '@/themes/theme'
 import { useRouter } from 'next/router'
-import CONFIG_NEXT from '@/themes/next/config'
-import { sortPostsByTopTag } from '@/lib/utils/post'
 
 /**
  * 搜索路由
@@ -49,12 +47,7 @@ export async function getStaticProps({ locale }) {
   const allPosts = allPages?.filter(
     page => page.type === 'Post' && page.status === 'Published'
   )
-  // NEXT 主题：按置顶标签重排
-  const currentTheme = siteConfig('THEME', BLOG.THEME, props?.NOTION_CONFIG)
-  const nextTopTag = siteConfig('NEXT_TOP_TAG', null, CONFIG_NEXT)
-  props.posts = currentTheme === 'next' && nextTopTag
-    ? sortPostsByTopTag(allPosts, nextTopTag)
-    : allPosts
+  props.posts = allPosts
   return {
     props,
     revalidate: process.env.EXPORT

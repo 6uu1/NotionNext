@@ -1,9 +1,9 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
 import { fetchGlobalAllData, getPostBlocks } from '@/lib/db/SiteDataApi'
+import { formatNotionBlock } from '@/lib/db/notion/getPostBlocks'
+import { adapterNotionBlockMap } from '@/lib/utils/notion.util'
 import { DynamicLayout } from '@/themes/theme'
-import CONFIG_NEXT from '@/themes/next/config'
-import { sortPostsByTopTag } from '@/lib/utils/post'
 
 /**
  * 文章列表分页
@@ -44,16 +44,9 @@ export async function getStaticProps({ params: { page }, locale }) {
     page => page.type === 'Post' && page.status === 'Published'
   )
 
-  // NEXT 主题：按置顶标签重排
-  const currentTheme = siteConfig('THEME', BLOG.THEME, props?.NOTION_CONFIG)
-  const defaultNextTopTag = siteConfig('NEXT_TOP_TAG', '', CONFIG_NEXT)
-  const nextTopTag = siteConfig('NEXT_TOP_TAG', defaultNextTopTag, props?.NOTION_CONFIG)
-  const sortedPosts = currentTheme === 'next' && nextTopTag
-    ? sortPostsByTopTag(allPosts, nextTopTag)
-    : allPosts
   const POSTS_PER_PAGE = siteConfig('POSTS_PER_PAGE', 12, props?.NOTION_CONFIG)
   // 处理分页
-  props.posts = sortedPosts.slice(
+  props.posts = allPosts.slice(
     POSTS_PER_PAGE * (page - 1),
     POSTS_PER_PAGE * page
   )
@@ -66,7 +59,11 @@ export async function getStaticProps({ params: { page }, locale }) {
       if (post.password && post.password !== '') {
         continue
       }
-      post.blockMap = await getPostBlocks(post.id, 'slug', POST_PREVIEW_LINES)
+      const rawBlockMap = await getPostBlocks(post.id, 'slug', POST_PREVIEW_LINES)
+      post.blockMap = adapterNotionBlockMap(rawBlockMap)
+      if (post.blockMap?.block) {
+        post.blockMap.block = formatNotionBlock(post.blockMap.block)
+      }
     }
   }
 
