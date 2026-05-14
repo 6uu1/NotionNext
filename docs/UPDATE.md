@@ -132,6 +132,14 @@ git merge main
 
 当前策略是：`localStorage` 只写入已经通过文章密码校验的凭据摘要（例如 `sha256:<digest>` 或 `legacy-md5:<digest>`），不写入明文；读取时仍兼容历史明文缓存，并在用户成功解锁后迁移为摘要凭据。后续合并 `lib/utils/password.js`、`pages/[prefix]/index.js` 时必须保留这一兼容逻辑。
 
+#### 置顶文章逻辑维护备注
+
+当前全局置顶由 `TOP_TAG` 控制，默认值是 `top`，配置来自 `conf/top-tag.config.js`，并已在 `blog.config.js` 中引入。使用时只需要在 Notion 文章数据库的 `tags` 字段里给文章添加 `top` 标签；如果想换标签名，可以在 Notion 配置表设置 `TOP_TAG`，或在部署环境变量中设置 `NEXT_PUBLIC_TOP_TAG` / `TOP_TAG`。
+
+置顶逻辑在 `lib/db/SiteDataApi.js` 中读取 `siteConfig('TOP_TAG', '', NOTION_CONFIG)`，再调用 `lib/utils/pinnedPosts.js` 的 `sortPinnedPostsByLatestUpdate(allPages, topTag)`。多篇文章可以同时置顶：所有含 `TOP_TAG` 的文章会整体排到普通文章前面；置顶文章之间按 `lastEditedDate` 倒序排列，缺少该字段时兜底用 `publishDate`；时间相同则保持原相对顺序。非置顶文章保持上游/原配置排序后的相对顺序。
+
+后续合并上游时，若涉及 `blog.config.js`、`conf/top-tag.config.js`、`lib/db/SiteDataApi.js`、`lib/utils/pinnedPosts.js` 或文章列表排序逻辑，必须确认上述置顶规则仍然保留。
+
 处理完成后：
 
 ```bash
