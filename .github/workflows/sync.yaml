@@ -55,7 +55,7 @@ jobs:
           set -euo pipefail
 
           title="Sync upstream main"
-          body="This pull request updates this fork with the latest commits from tangly1024/NotionNext:main.It is opened instead of auto-merging into main so conflicts and upstream changes can be reviewed manually."
+          body="This pull request updates this fork with the latest commits from tangly1024/NotionNext:main. It is opened instead of auto-merging into main so conflicts and upstream changes can be reviewed manually."
 
           pr_url="$(gh pr list \
             --base main \
@@ -65,14 +65,21 @@ jobs:
             --jq '.[0].url')"
 
           if [ -z "$pr_url" ]; then
-            gh pr create \
+            if ! gh pr create \
               --base main \
               --head sync/upstream-main \
               --title "$title" \
-              --body "$body"
+              --body "$body"; then
+              echo "::warning::Could not create the upstream sync pull request. Check repository Actions workflow permissions, or open a pull request manually from sync/upstream-main to main."
+              echo "The sync branch was pushed successfully: sync/upstream-main"
+              exit 0
+            fi
           else
-            gh pr edit "$pr_url" \
+            if ! gh pr edit "$pr_url" \
               --title "$title" \
-              --body "$body"
+              --body "$body"; then
+              echo "::warning::Could not update the existing upstream sync pull request: $pr_url"
+              exit 0
+            fi
             echo "Updated existing pull request: $pr_url"
           fi

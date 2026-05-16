@@ -1,12 +1,9 @@
-# 每次向 main 推送（含合并 PR）后，自动将 package.json 最后一位小版本 +1。
-# 自动提交信息含 [skip-version]，避免无限循环。发正式版或大版本时请人工改版本号后再合并。
+# 手动运行时，将 package.json 最后一位小版本 +1。
+# 发正式版或大版本时请人工改版本号后再合并。
 
 name: Bump package version on main
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -19,11 +16,6 @@ concurrency:
 jobs:
   bump-patch:
     runs-on: ubuntu-latest
-    # 跳过自动发版机器人自己的提交，防止循环触发
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.head_commit != null &&
-       !contains(github.event.head_commit.message, '[skip-version]'))
 
     steps:
       - name: Checkout
