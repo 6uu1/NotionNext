@@ -55,13 +55,9 @@ jobs:
           set -euo pipefail
 
           title="Sync upstream main"
-          body=$(
-            cat <<'BODY'
-                This pull request updates this fork with the latest commits from `tangly1024/NotionNext:main`.
+          body="This pull request updates this fork with the latest commits from tangly1024/NotionNext:main.
 
-                It is opened instead of auto-merging into `main` so conflicts and upstream changes can be reviewed manually.
-                BODY
-          )
+It is opened instead of auto-merging into main so conflicts and upstream changes can be reviewed manually."
 
           pr_url="$(gh pr list \
             --base main \
