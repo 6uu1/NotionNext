@@ -27,7 +27,10 @@ jobs:
           upstream_sync_repo: tangly1024/NotionNext
           upstream_sync_branch: main
           target_sync_branch: main
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+          # 默认的 GITHUB_TOKEN 无法推送 .github/workflows 下的文件变更。
+          # 若上游修改了 workflow 文件，需在仓库 Settings → Secrets 中配置
+          # SYNC_PAT（PAT，需勾选 repo 与 workflow 权限）才能自动同步。
+          target_repo_token: ${{ secrets.SYNC_PAT || secrets.GITHUB_TOKEN }}
 
           # Set test_mode true to run tests instead of the true action!!
           test_mode: false
@@ -35,5 +38,8 @@ jobs:
       - name: Sync check
         if: failure()
         run: |
-          echo "[Error] 由于上游仓库的 workflow 文件变更，导致 GitHub 自动暂停了本次自动更新，你需要手动 Sync Fork 一次。"
+          echo "[Error] 同步失败，常见原因："
+          echo "1. 上游修改了 .github/workflows 下的文件，而默认 GITHUB_TOKEN 没有 workflow 权限，推送被拒绝（remote rejected ... without workflows permission）。"
+          echo "   解决：在仓库 Settings → Secrets and variables → Actions 中添加名为 SYNC_PAT 的 Personal Access Token（classic，勾选 repo 与 workflow），或手动在仓库首页点击一次 Sync fork。"
+          echo "2. 仓库长期无提交活动，GitHub 自动暂停了定时任务，需要手动 Sync fork 一次并重新启用 workflow。"
           exit 1
